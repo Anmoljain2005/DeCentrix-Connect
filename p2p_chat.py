@@ -1,200 +1,193 @@
 import socket
 import threading
-import sys
 
-# Global variables
-peers = {}  
-server_socket = None
-client_sockets = []
+# Dictionary to store known peers: {(IP, Port): "Peer Name"}
+peer_list = {}
+connected_peers = set()
+
+# Threading lock for thread-safe access to shared resources
 lock = threading.Lock()
 
-def start_server(port):
-    """Start a TCP server to listen for incoming connections."""
-    global server_socket
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind(('0.0.0.0', port))
-    server_socket.listen(5)
-    print(f"Server listening on port {port}")
+# Fixed team name for this peer
+TEAM_NAME = "DeCentrix"
 
+# Mandatory IP and Port pairs to send messages to 
+# MANDATORY_PEERS = [("10.206.4.122", 1255), ("10.206.5.228", 6555)]
+MANDATORY_PEERS = []
+
+
+def receive_messages(server_socket):
+    """
+    Listens for incoming messages from other peers and updates the peer list.
+    """
     while True:
         try:
-            client_socket, client_address = server_socket.accept()
-            with lock:
-                peers[f"{client_address[0]}:{client_address[1]}"] = client_socket
-                client_sockets.append(client_socket)
-            print(f"New connection from {client_address[0]}:{client_address[1]}")
-            threading.Thread(target=receive_messages, args=(client_socket, client_address)).start()
-        except Exception as e:
-            print(f"Error accepting connection: {e}")
-            break
+            # Accept a connection from a peer
+            client, addr = server_socket.accept()
+            message = client.recv(1024).decode()
 
-def receive_messages(client_socket, client_address):
-    """Receive messages from a connected peer and dynamically add the sender to the peers list."""
-    sender_key = f"{client_address[0]}:{client_address[1]}"
-    with lock:
-        if sender_key not in peers:
-            peers[sender_key] = client_socket
-            print(f"Added {sender_key} to active peers.")
-
-    while True:
-        try:
-            message = client_socket.recv(1024).decode('utf-8')
-            if not message:
-                break
-            print(f"Received from {client_address[0]}:{client_address[1]}: {message}")
-        except ConnectionResetError:
-            break
-        except Exception as e:
-            print(f"Error receiving message: {e}")
-            break
-
-    with lock:
-        if sender_key in peers:
-            del peers[sender_key]
-        if client_socket in client_sockets:
-            client_sockets.remove(client_socket)
-        client_socket.close()
-        print(f"Connection closed with {client_address[0]}:{client_address[1]}")
-
-def send_message():
-    """Send a message to a specific peer."""
-    ip = input("Enter peer IP: ")
-    port = int(input("Enter peer port: "))
-    message = input("Enter message: ")
-
-    try:
-        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client_socket.connect((ip, port))
-        client_socket.send(message.encode('utf-8'))
-        with lock:
-            peers[f"{ip}:{port}"] = client_socket
-        print(f"Message sent to {ip}:{port}")
-    except Exception as e:
-        print(f"Failed to send message: {e}")
-
-def broadcast_message():
-    """Broadcast a message to all connected peers."""
-    message = input("Enter broadcast message: ")
-    with lock:
-        for peer, sock in list(peers.items()):
+            # Parse the message according to the standardized format
             try:
-                sock.send(message.encode('utf-8'))
+                sender_info, team_name, actual_message = message.split(" ", 2)
+                sender_ip, sender_port = sender_info.split(":")
+                sender_port = int(sender_port)
+
+                # Add the sender to the peer list if not already present
+                with lock:
+                    if (sender_ip, sender_port) not in peer_list:
+                        peer_list[(sender_ip, sender_port)] = team_name
+
+                # Display the received message
+                print(f"\n📩 Message from {sender_ip}:{sender_port} ({team_name}) → {actual_message}")
             except Exception as e:
-                print(f"Failed to send message to {peer}: {e}")
+                print("\n⚠️ Received malformed message:", message)
+                print("Error:", e)
 
-def query_peers():
-    """Display the list of active peers."""
-    with lock:
-        if not peers:
-            print("No active peers.")
-        else:
-            print("Active peers:")
-            for peer in peers:
-                print(peer)
-
-def connect_to_peer():
-    """Connect to an active peer and send a connection message."""
-    ip = input("Enter peer IP: ")
-    port = int(input("Enter peer port: "))
-
-    try:
-        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client_socket.connect((ip, port))
-        client_socket.send("Connection established".encode('utf-8'))
-        with lock:
-            peers[f"{ip}:{port}"] = client_socket
-            client_sockets.append(client_socket)
-        print(f"Connected to {ip}:{port}")
-    except Exception as e:
-        print(f"Failed to connect: {e}")
-
-def disconnect_from_peer():
-    """Disconnect from a specific peer."""
-    ip = input("Enter peer IP to disconnect: ")
-    port = int(input("Enter peer port to disconnect: "))
-    peer_key = f"{ip}:{port}"
-
-    with lock:
-        if peer_key in peers:
-            try:
-                peers[peer_key].close()
-                client_sockets.remove(peers[peer_key])
-                del peers[peer_key]
-                print(f"Disconnected from {peer_key}")
-            except Exception as e:
-                print(f"Failed to disconnect from {peer_key}: {e}")
-        else:
-            print(f"No active connection to {peer_key}")
-
-def main():
-    if len(sys.argv) != 3:
-        print("Usage: python p2p_chat.py <your_name> <your_port>")
-        return
-
-    name = sys.argv[1]
-    port = int(sys.argv[2])
-
-    # Start the server in a separate thread
-    server_thread = threading.Thread(target=start_server, args=(port,))
-    server_thread.daemon = True
-    server_thread.start()
-
-    # Mandatory connections
-    mandatory_peers = [("127.0.0.1", 5000)]
-    for ip, port in mandatory_peers:
-        try:
-            client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            client_socket.connect((ip, port))
-            client_socket.send(f"Connection from {name}".encode('utf-8'))
-            with lock:
-                peers[f"{ip}:{port}"] = client_socket
-                client_sockets.append(client_socket)
-            print(f"Connected to mandatory peer {ip}:{port}")
+            # Close the connection
+            client.close()
         except Exception as e:
-            print(f"Failed to connect to mandatory peer {ip}:{port}: {e}")
+            print("\n🚨 Error in receiving messages:", e)
+            break
 
-    # Menu
+
+def send_messages(my_ip, my_port):
+    """
+    Handles sending messages to other peers and managing peer connections.
+    """
     while True:
-        print("\n***** Menu *****")
-        print("1. Send message")
-        print("2. Broadcast message")
-        print("3. Query active peers")
-        print("4. Connect to active peers")
-        print("5. Disconnect from a peer")
+        # Display the menu
+        print("\n" + "=" * 30)
+        print("1. Send Message")
+        print("2. Query Active Peers")
+        print("3. Connect to Peers")
+        print("4. Broadcast Message")
+        print("5. Disconnect from Peer")
         print("0. Quit")
         choice = input("Enter your choice: ")
 
         if choice == "1":
-            send_message()
+            # Send a message to a specific peer
+            target_ip = input("Enter recipient's IP address: ")
+            target_port = int(input("Enter recipient's port number: "))
+            message = input("Enter your message: ")
+
+            # Standardize the message format
+            formatted_message = f"{my_ip}:{my_port} {TEAM_NAME} {message}"
+
+            # Send the message to the target peer
+            client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            try:
+                client.connect((target_ip, target_port))
+                client.send(formatted_message.encode())
+                print("✅ Message sent!")
+            except Exception as e:
+                print(f"❌ Connection failed: {e}")
+            finally:
+                client.close()
+
+            # Send the same message to mandatory peers
+            for ip, port in MANDATORY_PEERS:
+                if (ip, port) != (my_ip, my_port):  # Avoid sending to self
+                    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    try:
+                        client.connect((ip, port))
+                        client.send(formatted_message.encode())
+                        print(f"✅ Message sent to mandatory peer {ip}:{port}!")
+                    except Exception as e:
+                        print(f"❌ Failed to send message to mandatory peer {ip}:{port}: {e}")
+                    finally:
+                        client.close()
+
         elif choice == "2":
-            broadcast_message()
+            # Display the list of active peers
+            print("\n📜 Active Peers:")
+            with lock:
+                if peer_list:
+                    for (ip, port), name in peer_list.items():
+                        connection_status = " (Connected)" if (ip, port) in connected_peers else ""
+                        print(f"🔗 {name} → {ip}:{port}{connection_status}")
+                else:
+                    print("No active peers yet.")
+
         elif choice == "3":
-            query_peers()
+            # Connect to known peers
+            print("\n🔗 Connecting to known peers...")
+            with lock:
+                for (ip, port) in peer_list.keys():
+                    if (ip, port) not in connected_peers:
+                        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                        try:
+                            client.connect((ip, port))
+                            client.send(f"{my_ip}:{my_port} {TEAM_NAME} Hello, I am connecting!".encode())
+                            connected_peers.add((ip, port))
+                            print(f"✅ Connected to {ip}:{port}")
+                        except Exception as e:
+                            print(f"❌ Failed to connect to {ip}:{port}: {e}")
+                        finally:
+                            client.close()
+
         elif choice == "4":
-            connect_to_peer()
+            # Broadcast a message to all connected peers
+            message = input("Enter your broadcast message: ")
+            formatted_message = f"{my_ip}:{my_port} {TEAM_NAME} {message}"
+
+            with lock:
+                for (ip, port) in connected_peers:
+                    if (ip, port) != (my_ip, my_port):  # Avoid sending to self
+                        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                        try:
+                            client.connect((ip, port))
+                            client.send(formatted_message.encode())
+                            print(f"✅ Broadcast sent to {ip}:{port}!")
+                        except Exception as e:
+                            print(f"❌ Failed to send broadcast to {ip}:{port}: {e}")
+                        finally:
+                            client.close()
+
         elif choice == "5":
-            disconnect_from_peer()
+            # Disconnect from a specific peer
+            target_ip = input("Enter peer's IP address to disconnect: ")
+            target_port = int(input("Enter peer's port number to disconnect: "))
+
+            with lock:
+                if (target_ip, target_port) in connected_peers:
+                    connected_peers.remove((target_ip, target_port))
+                    print(f"🔌 Disconnected from {target_ip}:{target_port}")
+                else:
+                    print(f"⚠️ No active connection to {target_ip}:{target_port}")
+
         elif choice == "0":
+            # Exit the program
+            print("👋 Exiting chat. Goodbye!")
             break
+
         else:
-            print("Invalid choice. Try again.")
+            print("❌ Invalid choice! Please enter 1, 2, 3, 4, 5, or 0.")
 
-    # Cleanup
-    with lock:
-        for client_socket in client_sockets:
-            client_socket.close()
-        if server_socket:
-            server_socket.close()
-    print("Application shut down gracefully.")
 
+def main():
+    """
+    Main function to start the peer-to-peer chat application.
+    """
+    # Get the IP address and port from the user
+    my_ip = input("Enter your IP address: ")
+    my_port = int(input("Enter your port number: "))
+
+    # Set up the server socket
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind((my_ip, my_port))
+    server_socket.listen(5)
+    print(f"\n🚀 Server is listening on {my_ip}:{my_port}")
+
+    # Start a thread to receive messages
+    receive_thread = threading.Thread(target=receive_messages, args=(server_socket,))
+    receive_thread.daemon = True
+    receive_thread.start()
+
+    # Start the message sending function in the main thread
+    send_messages(my_ip, my_port)
+
+
+# Run the chat application
 if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        print("\nShutting down...")
-        with lock:
-            for client_socket in client_sockets:
-                client_socket.close()
-            if server_socket:
-                server_socket.close()
-        sys.exit(0)
+    main()
