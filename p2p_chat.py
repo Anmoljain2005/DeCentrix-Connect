@@ -12,8 +12,8 @@ lock = threading.Lock()
 TEAM_NAME = "DeCentrix"
 
 # Mandatory IP and Port pairs to send messages to 
-# MANDATORY_PEERS = [("10.206.4.122", 1255), ("10.206.5.228", 6555)]
-MANDATORY_PEERS = []
+MANDATORY_PEERS = [("10.206.4.122", 1255), ("10.206.5.228", 6555)]
+# MANDATORY_PEERS = []
 
 
 def receive_messages(server_socket):
