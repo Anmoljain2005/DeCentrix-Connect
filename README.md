@@ -21,7 +21,7 @@ A peer-to-peer chat application built with Python that enables direct communicat
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/decentrix-chat.git
+git clone https://github.com/Anmoljain2005/DeCentrix-Connect.git
 cd decentrix-chat
 ```
 
@@ -77,7 +77,7 @@ Before running the application across different computers, configure the Windows
      ```
    - Run the application:
      ```bash
-     python chat.py
+     python p2p_chat.py
      ```
    - Enter your computer's IP address and a port number (e.g., 5001)
 
