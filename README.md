@@ -1,127 +1,116 @@
-# Peer-to-Peer (P2P) Chat Application
+# DeCentrix P2P Chat Application
 
-## Overview
-This Peer-to-Peer Chat Application is a Python-based program that facilitates direct communication between connected peers in a network. The application enables features like sending direct messages, broadcasting messages to all connected peers, managing peer connections, and querying active peers.
+A peer-to-peer chat application built with Python that enables direct communication between multiple users across a network. The application supports both local testing with multiple terminals and deployment across different computers on a network.
 
 ## Features
-1. **Start a Local Server**: Hosts a TCP server that listens for incoming connections.
-2. **Dynamic Peer Management**: Automatically adds peers upon connection and removes them upon disconnection.
-3. **Send Messages**: Send a message to a specific peer by providing their IP and port.
-4. **Broadcast Messages**: Send a message to all connected peers simultaneously.
-5. **Query Active Peers**: View a list of all currently connected peers.
-6. **Connect to New Peers**: Initiate connections to other peers manually.
-7. **Disconnect from Peers**: Gracefully close the connection to a specific peer.
-8. **Mandatory Peer Connections**: Connects to predefined peers on startup.
 
----
+- Direct messaging between peers
+- Broadcasting messages to all connected peers
+- Real-time peer discovery and connection management
+- Support for mandatory message forwarding to specified peers
+- Thread-safe operations for concurrent message handling
+- Simple command-line interface with emoji feedback
+
+## Prerequisites
+
+- Python 3.x
+- Basic understanding of networking concepts
+- Knowledge of your system's IP address and available ports
 
 ## Installation
 
-### Prerequisites
-- Python 3.7 or later
-
-### Steps
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/yourusername/p2p-chat.git
-   cd p2p-chat
-   ```
-2. Install any necessary Python packages (if applicable). For standard libraries, no extra dependencies are required.
-3. Run the script:
-   ```bash
-   python p2p_chat.py <your_name> <your_port>
-   ```
-   Replace `<your_name>` with your identifier and `<your_port>` with the port number you want the server to run on.
-
----
-
-## How to Use
-
-### Starting the Application
-Run the application using the command:
+1. Clone the repository:
 ```bash
-python p2p_chat.py <your_name> <your_port>
+git clone https://github.com/yourusername/decentrix-chat.git
+cd decentrix-chat
 ```
 
-### Main Menu Options
-1. **Send Message**
-   - Input the IP and port of the target peer.
-   - Type the message to send.
-2. **Broadcast Message**
-   - Type the message to broadcast to all connected peers.
-3. **Query Active Peers**
-   - Displays the list of all currently connected peers.
-4. **Connect to a Peer**
-   - Input the IP and port of the peer to establish a connection.
-   - Automatically sends a connection confirmation message.
-5. **Disconnect from a Peer**
-   - Input the IP and port of the peer to disconnect.
-6. **Quit**
-   - Exits the application and closes all active connections.
+2. No additional dependencies are required as the application uses Python's standard library.
 
----
+## Usage
 
-## Code Explanation
+### Local Testing (Multiple Terminals)
 
-### Modules
-- **socket**: Manages TCP socket communication.
-- **threading**: Handles concurrent threads for server and client operations.
-- **sys**: Processes command-line arguments.
+1. Open 3-4 terminal windows
+2. In each terminal, run:
+```bash
+python p2p_chat.py
+```
+3. For local testing, use:
+   - IP Address: `127.0.0.1`
+   - Different port numbers for each instance (e.g., 5001, 5002, 5003)
+4. Use the menu options to send messages between the instances
 
-### Key Components
-1. **Server**:
-   - Starts a local TCP server on a user-specified port.
-   - Listens for incoming connections and spawns threads to handle each client.
-2. **Client**:
-   - Enables outgoing connections to peers.
-   - Sends and receives messages over established TCP connections.
-3. **Thread-Safe Operations**:
-   - Uses a threading lock to ensure synchronized access to shared resources like `peers` and `client_sockets`.
+### Network Deployment (Multiple Computers)
 
----
+#### Windows Firewall Configuration
 
-## Example Usage
-1. Start the server on one machine:
-   ```bash
-   python p2p_chat.py Alice 5000
-   ```
-   Output:
-   ```
-   Server listening on port 5000
-   ```
+Before running the application across different computers, configure the Windows Firewall:
 
-2. Connect from another machine:
-   ```bash
-   python p2p_chat.py Bob 5001
-   ```
-   Use the menu to connect to Alice's server:
-   ```
-   Enter peer IP: 127.0.0.1
-   Enter peer port: 5000
-   ```
+1. Open Windows Firewall Settings:
+   - Press Windows key + R
+   - Type "wf.msc" and press Enter
+   OR
+   - Go to Control Panel → System and Security → Windows Defender Firewall
 
-3. Send a message from Bob to Alice:
-   ```
-   Enter peer IP: 127.0.0.1
-   Enter peer port: 5000
-   Enter message: Hello, Alice!
-   ```
+2. Create Inbound Rule for Python:
+   - Click "Inbound Rules" → "New Rule..."
+   - Select "Program"
+   - Browse to Python executable (typically `C:\Users\YourUsername\AppData\Local\Programs\Python\Python3x\python.exe`)
+   - Select "Allow the connection"
+   - Check all network types (Domain, Private, Public)
+   - Name the rule (e.g., "Python Chat Application")
 
-4. Alice receives:
-   ```
-   Received from 127.0.0.1:5001: Hello, Alice!
-   ```
+3. Create Outbound Rule:
+   - Repeat the above steps in "Outbound Rules"
 
----
+#### Running the Application
 
-## Notes
-- Mandatory peers can be configured in the `main()` function by modifying the `mandatory_peers` list.
-- If a peer disconnects unexpectedly, the application automatically cleans up resources.
-- Message size is currently limited to 1024 bytes. This can be adjusted in the `recv` method.
+1. On each computer:
+   - Find your IP address:
+     ```bash
+     # Windows
+     ipconfig
+     
+     # Linux/Mac
+     ifconfig
+     ```
+   - Run the application:
+     ```bash
+     python chat.py
+     ```
+   - Enter your computer's IP address and a port number (e.g., 5001)
 
----
+2. To connect to other peers:
+   - Use option 1 to send direct messages
+   - Use option 3 to connect to known peers
+   - Use option 4 to broadcast messages
 
+## Menu Options
 
+1. **Send Message**: Send a direct message to a specific peer
+2. **Query Active Peers**: View list of known peers and their connection status
+3. **Connect to Peers**: Establish connections with known peers
+4. **Broadcast Message**: Send a message to all connected peers
+5. **Disconnect from Peer**: Remove connection with a specific peer
+0. **Quit**: Exit the application
+
+## Configuration
+
+- `TEAM_NAME`: Set your team identifier in the code
+- `MANDATORY_PEERS`: Configure IP:Port pairs that should receive copies of all messages
+
+## Troubleshooting
+
+1. **Connection Refused**:
+   - Verify the target IP and port are correct
+   - Ensure the target application is running
+   - Check firewall settings
+
+2. **Address Already in Use**:
+   - Choose a different port number
+   - Wait a few minutes for the previous connection to timeout
+   - Check if another application is using the port
 
 ## Acknowledgments
 - This Network Coding Assignment is a part of the course CS216 Introduction to Blockchain under the guidance of Dr. Subhra Mazumdar.
