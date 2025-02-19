@@ -113,8 +113,6 @@ Before running the application across different computers, configure the Windows
    - Check if another application is using the port
 
 ## Acknowledgments
-- This Network Coding Assignment is a part of the course CS216 Introduction to Blockchain under the guidance of Dr. Subhra Mazumdar.
+- This Network Coding Assignment is a part of the course CS-216 Introduction to Blockchain under the guidance of Dr. Subhra Mazumdar.
 
 ---
-.
-
