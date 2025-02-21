@@ -13,7 +13,7 @@ A peer-to-peer chat application built with Python that enables direct communicat
 
 ## Prerequisites
 
-- Python 3.x
+- Python 3.12.7
 - Basic understanding of networking concepts
 - Knowledge of your system's IP address and available ports
 
