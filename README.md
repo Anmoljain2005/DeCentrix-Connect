@@ -112,6 +112,11 @@ Before running the application across different computers, configure the Windows
    - Wait a few minutes for the previous connection to timeout
    - Check if another application is using the port
 
+## Team Members
+1. **Anmol Jain**: 230008009
+2. **Priyanshu Patel**: 230008027
+3. **Mitanshu Kumawat**: 230008022
+
 ## Acknowledgments
 - This Network Coding Assignment is a part of the course CS-216 Introduction to Blockchain under the guidance of Dr. Subhra Mazumdar.
 
