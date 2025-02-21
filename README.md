@@ -1,6 +1,6 @@
 # DeCentrix P2P Chat Application
 
-A peer-to-peer chat application built with Python that enables direct communication between multiple users across a network. The application supports both local testing with multiple terminals and deployment across different computers on a network.
+A peer-to-peer chat application built with Python that enables direct communication between multiple users across a network. The application supports both local testing with multiple terminals and deployment across different computers on a network. The application also handles the bonus question effectively.
 
 ## Features
 
