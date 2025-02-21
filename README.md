@@ -22,7 +22,6 @@ A peer-to-peer chat application built with Python that enables direct communicat
 1. Clone the repository:
 ```bash
 git clone https://github.com/Anmoljain2005/DeCentrix-Connect.git
-cd decentrix-chat
 ```
 
 2. No additional dependencies are required as the application uses Python's standard library.
