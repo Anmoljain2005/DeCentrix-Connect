@@ -1,7 +1,7 @@
 """
 CS 216 P2P Chat Implementation
 Team: DeCentrix
-Members: Anmol Jain (230008009), Mitanshu Kumawat (230008022), Priyanshu Patel (230008027)
+Members: Anmol Jain (230008009), Mitanshu Kumawat (230008022), Priyanshu Patel (230008026)
 Bonus Question: Implemented Connect Functionality
 """
 import socket
