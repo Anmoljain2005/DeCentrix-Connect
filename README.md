@@ -100,6 +100,13 @@ Before running the application across different computers, configure the Windows
 - `TEAM_NAME`: Set your team identifier in the code
 - `MANDATORY_PEERS`: Configure IP:Port pairs that should receive copies of all messages
 
+## Example of Terminal Testing
+
+Here is a sample test run of the application in multiple terminal windows:
+
+![Terminal Screenshot](Screenshots/Testing_on_Localhost.png)
+
+
 ## Troubleshooting
 
 1. **Connection Refused**:
