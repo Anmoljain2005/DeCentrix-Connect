@@ -128,7 +128,7 @@ Here is a sample test run of the application in one of the Systems when run on M
 
 ## Team Members
 1. **Anmol Jain**: 230008009
-2. **Priyanshu Patel**: 230008027
+2. **Priyanshu Patel**: 230008026
 3. **Mitanshu Kumawat**: 230008022
 
 ## Acknowledgments
