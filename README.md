@@ -104,13 +104,14 @@ Before running the application across different computers, configure the Windows
 
 Here is a sample test run of the application in multiple terminal windows:
 
-![Terminal Screenshot](Screenshots/Testing_on_Localhost.png)
+![Terminal Screenshot_1](Screenshots/Testing_on_Localhost.png)
 
 ## Example of Testing on Multiple Systems
 
 Here is a sample test run of the application in one of the Systems when run on Multiple Systems:
 
-![Terminal Screenshot](Screenshots/Testing_on_multiple_PC_1)    ![Terminal Screenshot](Screenshots/Testing_on_multiple_PC_2)
+![Terminal Screenshot_2](Screenshots/Testing_on_multiple_PC_1.png)    
+![Terminal Screenshot_3](Screenshots/Testing_on_multiple_PC_2.png)
 
 
 ## Troubleshooting
