@@ -128,7 +128,7 @@ Here is a sample test run of the application in two Systems when run on Multiple
    - Wait a few minutes for the previous connection to timeout
    - Check if another application is using the port
 
-## Team Members
+## Members of Team-DeCentrix:
 1. **Anmol Jain**: 230008009
 2. **Priyanshu Patel**: 230008026
 3. **Mitanshu Kumawat**: 230008022
