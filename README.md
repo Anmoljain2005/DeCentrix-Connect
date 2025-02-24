@@ -108,11 +108,13 @@ Here is a sample test run of the application in multiple terminal windows:
 
 ## Example of Testing on Multiple Systems
 
-Here is a sample test run of the application in one of the Systems when run on Multiple Systems:
+Here is a sample test run of the application in two Systems when run on Multiple Systems:
 
-![Terminal Screenshot_2](Screenshots/Testing_on_multiple_PC_1.png)    
+![Terminal Screenshot_2](Screenshots/Testing_on_multiple_PC_1.png) 
+Screenshot of Application on PC-1
+
 ![Terminal Screenshot_3](Screenshots/Testing_on_multiple_PC_2.png)
-
+Screenshot of Application on PC-2
 
 ## Troubleshooting
 
